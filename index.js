@@ -1,45 +1,45 @@
-const express = require('express')
-const mongoose = require('mongoose');
-const app = express()
-const cookieParser = require('cookie-parser')
-var cors = require('cors')
-const port = 3500
-const auth = require('./routes/auth');
-const story = require('./routes/story');
+const express = require("express");
+const mongoose = require("mongoose");
+const app = express();
+var cors = require("cors");
+const port = 3500;
+const auth = require("./routes/auth");
+const quiz = require("./routes/quiz");
 
 // Middleware
-const dotenv = require('dotenv');
-const errorHandler = require('./middleware/errorHandler');
+const dotenv = require("dotenv");
+const errorHandler = require("./middleware/errorHandler");
 dotenv.config();
 
-app.use(cors())
-app.use(cookieParser());
+app.use(cors());
 
-mongoose.connect(process.env.MONGODB_URL).then(() => {
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => {
     console.log("connection established to MongoDB");
-}).catch((err) => {
+  })
+  .catch((err) => {
     console.log("error connecting to MongoDB", err);
-});
+  });
 
 const PORT = process.env.PORT || port;
 const HOST = process.env.HOST || "localhost";
 
-
-app.get('/', (req, res) => {
-  res.send('Hello World! cricket')
-})
+app.get("/", async (req, res) => {
+  res.json({message: "Default Route"});
+});
 
 app.use(express.json());
 
-app.use('/api/v1/auth', auth);
-app.use('/api/v1/story', story);
+app.use("/api/auth", auth);
+app.use("/api/quiz", quiz);
 
-app.use('/*', (req, res) => {
-    res.status(404).json({message: "Route not found"});
-})
+app.use("/*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log(`Server listening on port https://${HOST}:${PORT}`); 
-})
+  console.log(`Server listening on port https://${HOST}:${PORT}`);
+});

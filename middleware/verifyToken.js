@@ -13,7 +13,7 @@ const Verify = (req, res, next) => {
 
         const decode = jwt.verify(token, process.env.SECRET_KEY);
 
-        // This is payload inside of decode. Another security factor for access
+        // This is payload inside of decode. Another security factor for accessing data
         const isUserValid = User.findById(decode.id);
 
         if (!isUserValid) {

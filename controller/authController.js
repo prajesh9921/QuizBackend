@@ -4,8 +4,8 @@ const bcrypt = require("bcrypt");
 
 const RegisterUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if ((!email, !password)) {
+    const { name, email, password } = req.body;
+    if ((!name, !email, !password)) {
       res.status(400).json({ message: "Bad request" });
     }
 
@@ -17,6 +17,7 @@ const RegisterUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
+      name: name,
       email: email,
       password: hashedPassword,
     });
@@ -39,35 +40,31 @@ const UserLogin = async (req, res) => {
     const { email, password } = req.body;
     const userDetails = await User.findOne({ email: email });
     if (!userDetails) {
-      res.status(401).json({ message: "Invalid username or password", loginStatus: false});
+      res
+        .status(401)
+        .json({ message: "Invalid username or password", loginStatus: false });
     }
 
     const matchPassword = await bcrypt.compare(password, userDetails.password);
 
     if (!matchPassword) {
-      res.status(401).json({ message: "Invalid username or password", loginStatus: false });
+      res
+        .status(401)
+        .json({ message: "Invalid username or password", loginStatus: false });
     }
 
     const token = jwt.sign({ id: userDetails._id }, process.env.SECRET_KEY);
 
-    // Storing a cookie
-    res.cookie("token", token, { httpOnly: true });
-    res.cookie("userid", userDetails._id, { httpOnly: true });
-
-    res
-      .status(200)
-      .json({
-        message: "user login successfull",
-        token: token,
-        userEmail: userDetails.email,
-        userId: userDetails._id,
-        loginStatus: true
-      });
+    res.status(200).json({
+      message: "user login successfull",
+      token: token,
+      userEmail: userDetails.email,
+      userId: userDetails._id,
+      loginStatus: true,
+    });
   } catch (err) {
     console.log("Error logging user" + err);
   }
 };
-
-
 
 module.exports = { RegisterUser, UserLogin };
