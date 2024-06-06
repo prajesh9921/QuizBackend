@@ -3,7 +3,7 @@ const router = express.Router();
 const QuizController = require('../controller/quizController');
 const Verify = require('../middleware/verifyToken');
 
-router.post('/addquiz', Verify, QuizController.AddQuiz);
+router.post('/addquiz', QuizController.AddQuiz);
 
 router.get('/quizbyid/:quizId', QuizController.GetQuizById);
 
